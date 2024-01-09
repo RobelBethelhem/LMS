@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+        
+
+        <h1>Certeficate Generator</h1>
+        <label for="name">Name</label>
+        <input type="text" id="name"  >
+        <label for="course">Course</label>
+        <input type="text" id="course">
+        <label for="director">Director</label>
+        <input type="text" id="director">
+        <label for="head">Head</label>
+        <input type="text" id="head">
+
+        <a id="download_btn" href="#">Download</a>
+        <canvas id="canvas" height="1000px" width="1000px"></canvas>
+
+
+        
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@latest"></script>
+<script src="certeficate.js"></script>
+
+</body>
+
+</html>

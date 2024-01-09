@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css"> 
+    <link rel="stylesheet" href="css/cs-skin-border.css" > 
+    <link rel="stylesheet" href="/register_user.css" >  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+        
+
+        <div class="user-registration-form">
+          <div class="form-container">
+            <h2>User Registration</h2>
+            <form class="name userregform" enctype="multipart/form-data">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+    
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+    
+                <label for="position">Position:</label>
+                <select id="position" name="position" class="custom-select" required>
+                    <option value="" disabled selected>Select Position</option>
+                    <option value="YGT">YGT</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Director">Director</option>
+                    <!-- Add more options as needed -->
+                </select>
+    
+                <label for="department">Department:</label>
+                <select id="department" name="department" class="custom-select" required>
+                    <option value="" disabled selected>Select Department</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Business">Business</option>
+                    
+                    <!-- Add more options as needed -->
+                </select>
+    
+                <label for="phonenumber">Phone Number:</label>
+                <input type="tel" id="phonenumber" name="phonenumber" required>
+    
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+    
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+
+                <label for="pp">User (Image):</label>
+                <input type="file" id="pp" name="pp" accept="image/*" required>
+                
+
+                <div class="loginpassword error text-danger" style="color: red;"></div>
+    
+                <button type="submit">Register</button>
+            </form>
+        </div>
+          
+      </div>
+      
+
+
+
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</body>
+
+</html>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+
+    const userregform = document.querySelector('form.name.userregform');
+  const loginpasswordError = document.querySelector('.loginpassword.error');
+  const inputs = userregform.querySelectorAll('input'); 
+  const selects = userregform.querySelectorAll('select');
+   // Choose a strong encryption key (replace with a more secure, secret key)
+   const encryptionKey = 'Zemen Bank HQ Form Retrival Key';
+   const user_id = `<%= user.id%>`
+
+// Save form data on input change
+userregform.addEventListener('change', () => {
+  
+    const formData = {};
+    for (let i = 0; i < inputs.length; i++) {
+        const name = inputs[i].name;
+        const value = inputs[i].value;
+        formData[name] = value;
+    }
+    for(let i=0; i<selects.length ; i++){
+      const name = selects[i].name;
+      const value = selects[i].value;
+      formData[name] = value;
+    }
+
+    // Encrypt form data before saving
+    const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(formData), encryptionKey);
+    localStorage.setItem(`formDataUser${user_id}`, encryptedData.toString());
+});
+
+// Restore form data if available
+if (localStorage.getItem(`formDataUser${user_id}`)) {
+    const encryptedData = localStorage.getItem(`formDataUser${user_id}`);
+
+    // Decrypt form data
+    const decryptedData = CryptoJS.AES.decrypt(encryptedData, encryptionKey).toString(CryptoJS.enc.Utf8);
+    const formData = JSON.parse(decryptedData);
+
+    for (let i = 0; i < inputs.length; i++) {
+        const name = inputs[i].name;
+        if (formData[name]) {
+            inputs[i].value = formData[name];
+        }
+    }
+    for(let i=0; i< selects.length;i++){
+      const name = selects[i].name;
+      if(formData[name]){
+        selects[i].value = formData[name];
+      }
+    }
+    
+}
+  userregform.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    localStorage.removeItem('formDataUser');
+
+    loginpasswordError.textContent = '';
+
+    const formData = new FormData(userregform);
+
+    try {
+      const res = await fetch('/register_user', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        loginpasswordError.textContent = data.message;
+        // You can handle the success response here, such as redirecting the user.
+      } else {
+        loginpasswordError.textContent = data.message;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  });
+
+</script>
+
+
+

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('./partials/head.ejs') %>
+ <link rel="stylesheet" href="/log_in.css">
+ <style>
+
+
+ </style>
+<body>
+    <!--Modals for log in-->
+
+    
+    
+            <div class="main-wrapper" style="position: fixed; padding-top: 60px;">
+                <%- include('./partials/nav.ejs') %>
+                <div class="wrapper">
+                    <video autoplay muted loop id="myVideo">
+                        <source src="background.mp4" type="video/mp4">
+                    </video>
+          
+                   
+                    <form class="name loginform">
+                        <div class="form-field d-flex align-items-center">
+                            <span class="far fa-user"></span>
+                            <input type="email"  name="loginemail" id="loginemail" placeholder="Username" required>
+                        </div>
+                        <div class="loginemail error " style="color: red; font-weight: bold;"></div>
+                        <div class="form-field d-flex align-items-center">
+                            <span class="fas fa-key"></span>
+                            <input type="password" name="loginpassword" id="loginpassword" placeholder="Password" required>
+                        </div>
+                        <div class="loginpassword error " style="color: red;font-weight: bold;"></div>
+
+                        <button class="btn mt-3">Login</button>
+                    </form>
+                   
+                </div>
+            </div>
+            </body>
+
+            <script>
+                   const loginform = document.querySelector('form.name.loginform');
+                   const loginemailError = document.querySelector('.loginemail.error');
+                   const loginpasswordError = document.querySelector('.loginpassword.error'); 
+                   const loading = document.querySelector('.sk-circle'); 
+
+                // loading.style.display = "none"
+                // loginform.style.display = "block"
+
+                //login_handler
+                loginform.addEventListener('submit', async (e) =>{
+                        e.preventDefault();
+                        // loading.style.display = "block"
+                        // loginform.style.display = "none"
+
+                        //reset errors
+                        loginemailError.textContent = '';
+                        loginpasswordError.textContent = '';
+
+                        // getting values
+                        const email = loginform.loginemail.value;
+                        const password = loginform.loginpassword.value;
+
+                        // try the user login
+                        try {
+                        const res = await fetch('/log_in', { 
+                        method: 'POST', 
+                        body: JSON.stringify({ email, password }),
+                        headers: {'Content-Type': 'application/json'}
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            console.log(data.user);
+                            console.log('kjh');
+                                console.log('Login successful:', data);
+                                location.assign('/courses');
+                                // You can handle the success response here, such as redirecting the user.
+                                }
+                                else{
+                                    loginemailError.textContent = data.error.email;
+                                    loginpasswordError.textContent = data.error.password;
+                                }
+
+                    }
+                    catch (err) {
+                        console.log(err);
+                    }
+                    })
+                           </script>
+    
+ 
+
+       
+       

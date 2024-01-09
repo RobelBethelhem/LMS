@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css">  
+    <!-- <link rel="stylesheet" href="css/cs-skin-border.css" >  -->
+    <link rel="stylesheet" href="/register_course.css" >  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+        
+
+        
+
+
+
+        <div class="user-registration-form">
+          <div class="form-container">
+            <h2>Course Registration</h2>
+           
+            <form class="name courseregform" enctype="multipart/form-data">
+                <label for="course_title">Course_title:</label>
+                <input type="text" id="course_title" name="course_title" required>
+                
+                <label for="course_id">Course_id:</label>
+                <input type="text" id="course_id" name="course_id" required>
+    
+                
+
+                <label for="position">Position:</label>
+               
+                <select id="position" name="position" class="custom-select" required multiple size="3">
+                    <option value="" disabled selected>Select Position</option>
+                    <option value="YGT">YGT</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Director">Director</option>
+                    <option value="all">All</option>
+  
+                </select>
+    
+                <label for="department">Department:</label>
+                <select id="department" name="department" class="custom-select" required multiple size="3">
+                    <option value="" disabled selected>Select Department</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Business">Business</option>
+                    <option value="all">All</option>
+             
+                </select>
+    
+                <label for="course_description">Course Description:</label>
+                <textarea name="course_description" id="course_description" name="course_description" rows="8"></textarea>
+                <!-- <input type="text" id="course_description" name="course_description" required> -->
+
+                <label for="course_objective">Course Objective:</label>
+                <textarea name="course_objective" id="course_objective" name="course_objective" rows="8"></textarea>
+
+                <!-- <input type="text" id="course_objective" name="course_objective" required> -->
+
+                <label for="course_status">Course Status Options:</label>
+                <select id="course_status" name="course_status" class="custom-select" required>
+                  <option value="" disabled selected>Select Course Status</option>
+                    <option value="pc">In Progress/Completed</option>
+                    <option value="pp">In Progress/Passed</option>
+                    <option value="ppf">In Progress/Passed/Failed</option>
+                </select>
+
+                <label for="certeficate_needed">Certeficate Needed:</label>
+                <select id="certeficate_needed" name="certeficate_needed" class="custom-select" required>
+                  <option value="" disabled selected>Select Certeficate needed</option>
+                    <option value="yes">Certeficate Issued when after completion of course </option>
+                    <option value="no">Certeficate not Issued when after completion of course</option>
+                </select>
+
+                <label for="sensetivity">Material Sensetivity:</label>
+                <select id="sensetivity" name="sensetivity" class="custom-select" required>
+                  <option value="" disabled selected>Select Sensetivity</option>
+                    <option value="yes">High</option>
+                    <option value="no">Low</option>
+                </select>
+
+                <label for="passing_score" id="passing_score_label" style="display: none;">Passing Score:</label>
+                <input type="number" id="passing_score" name="passing_score" style="display: none;">
+
+                <label for="total_hour">Total Hour:</label>
+                <input type="number" id="total_hour" name="total_hour" required>
+
+                <label for="thumbnail">Thumbnail (Image):</label>
+                <input type="file" id="thumbnail" name="thumbnail" accept="image/*" >
+
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="material" name="material" accept=".pdf" multiple>
+                  <label class="custom-file-label" for="material">Choose Material (PDF)</label>
+                </div>
+                <div id="materialDisplay" class="selected-files"></div>
+              
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="video" name="video" accept="video/*" multiple>
+                  <label class="custom-file-label" for="video">Choose Video</label>
+                </div>
+                <div id="videoDisplay" class="selected-files"></div> 
+<!-- 
+                <label for="material">Material (PDF):</label>
+                <input type="file" id="material" name="material" accept=".pdf" multiple> 
+
+                <label for="video">Video:</label>
+                <input type="file" id="video" name="video" accept="video/*" multiple> -->
+
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+
+                <div class="loginpassword error text-danger" style="color: red;"></div>
+    
+                <button type="submit">Register</button>
+            </form>
+        </div>
+          
+      </div>
+
+
+
+
+
+
+
+
+
+
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+
+<script src="/dynamicalyshowpassingscore_add_course.js"></script>
+<script src="/dynamicfileinput_add_course.js"></script>
+</body>
+
+</html>
+
+<script>
+
+const courseregform = document.querySelector('form.name.courseregform');
+const loginpasswordError = document.querySelector('.loginpassword.error');
+const video = document.getElementById('video');
+
+courseregform.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  loginpasswordError.textContent = '';
+  console.log(video)
+
+
+  try {
+    const formData = new FormData(courseregform);
+    const res = await fetch('/register_course', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      loginpasswordError.textContent = data.message;
+      // You can handle the success response here, such as redirecting the user.
+    } else {
+      loginpasswordError.textContent = data.message;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+  
+  
+</script>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css">  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+        
+
+        <div>
+          <p>Take Quizes Page</p>
+        </div>
+
+
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+</body>
+
+</html>
+
+<!-- Include this script in your HTML file or front-end JavaScript file -->
+<script>
+  // Function to handle visibility change
+function handleVisibilityChange() {
+  if (document.visibilityState === 'visible') {
+    // Retrieve the token from the cookie or wherever it's stored
+    const token = getCookie('jwt'); // Implement the getCookie function
+
+    // Call the logout route to destroy the session when the page becomes visible
+    fetch('/logout', { method: 'GET', headers: { 'Authorization': token } })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+
+        // Redirect to login route
+        window.location.href = '/log_in';
+      })
+      .catch(error => console.log(error));
+  }
+}
+
+// Add visibilitychange event listener
+document.addEventListener('visibilitychange', handleVisibilityChange);
+
+// Function to retrieve a cookie value
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+</script>

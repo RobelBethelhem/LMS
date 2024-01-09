@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css"> 
+    <!-- <link rel="stylesheet" href="css/cs-skin-border.css" >   -->
+    <link rel="stylesheet" href="/add_question.css">  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+        
+          <div class="button-container">
+            <div class="button-group">
+              <button onclick="addQuestion()" type="button">+</button>
+              <button onclick="removeQuestion()" type="button">-</button>
+            </div>
+            <button type="submit" class="submit-button" onclick="submitForm()">Submit</button>
+          </div>
+
+          <div class="search-container">
+    <select id="searchInput">
+      <option value="">Select the course code</option>
+      <% for(var i =0;i<courses.length;i++){%>
+        <option value=<%=courses[i].course_id  %>><%=courses[i].course_id  %></option>
+        <% } %>
+      <!-- Add more options here -->
+    </select>
+  </div>
+  <div>
+    <input type="password" name="password" placeholder="Question Password"/>
+    <input type="number" name="duration" placeholder="set Duration">
+    <input type="date" name="date" class="form-control" id="date" placeholder="Date" data-rule="minlen:4" required>
+    <input type="time" class="form-control" name="time" id="time" placeholder="Time" data-rule="minlen:4" required>
+  </div>
+
+          <p class="notify" id="notify"></p>
+          <div class="question-container" id="question-container">
+              <h2>Question 1</h2>
+        
+              <textarea name="question1" id="question1" rows="4"></textarea>
+              
+              <label>Choices:</label>
+              <div class="choice-container">
+                  <label for="choiceA">A:</label>
+                  <input type="text" name="choiceA1" id="choiceA1" >
+                  
+                  <label for="choiceB">B:</label>
+                  <input type="text" name="choiceB1" id="choiceB1" >
+                  
+                  <label for="choiceC">C:</label>
+                  <input type="text" name="choiceC1" id="choiceC1" >
+                  
+                  <label for="choiceD">D:</label>
+                  <input type="text" name="choiceD1" id="choiceD1" >
+              </div>
+              <div class="loginpassword error text-danger" style="color: red;"></div>
+          </div>
+
+
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+<script>
+  let questionCounter = 1;
+
+  function addQuestion() {
+    questionCounter++;
+
+    const container = document.getElementById('question-container');
+
+    const newQuestion = document.createElement('div');
+    newQuestion.classList.add('question-container');
+    newQuestion.innerHTML = `
+      <h2>Question ${questionCounter}</h2>
+      <textarea name="question${questionCounter}" id="question${questionCounter}" rows="4"></textarea>
+      
+      <label>Choices:</label>
+      <div class="choice-container">
+        <label for="choiceA${questionCounter}">A:</label>
+        <input type="text" name="choiceA${questionCounter}" id="choiceA${questionCounter}">
+        
+        <label for="choiceB${questionCounter}">B:</label>
+        <input type="text" name="choiceB${questionCounter}" id="choiceB${questionCounter}">
+        
+        <label for="choiceC${questionCounter}">C:</label>
+        <input type="text" name="choiceC${questionCounter}" id="choiceC${questionCounter}">
+        
+        <label for="choiceD${questionCounter}">D:</label>
+        <input type="text" name="choiceD${questionCounter}" id="choiceD${questionCounter}">
+      </div>
+    `;
+
+    container.appendChild(newQuestion);
+    updateNotification();
+  }
+
+  function removeQuestion() {
+    const container = document.getElementById('question-container');
+    const questions = container.getElementsByClassName('question-container');
+
+    if (questions.length > 0) {
+      container.removeChild(questions[questions.length - 1]);
+      questionCounter--;
+      updateNotification();
+    }
+  }
+
+  function updateNotification() {
+    const notify = document.getElementById('notify');
+    notify.innerHTML = questionCounter > 1 ? `Total Question fileds are ${questionCounter} !` : `Total Question fileds is ${questionCounter}!`;
+  }
+</script>
+<script>
+  $(document).ready(function() {
+    // Initialize Selectize on the searchInput element
+    $('#searchInput').selectize();
+  });
+</script>
+
+<script>
+   function submitForm() {
+    const passwordElement = document.querySelector('input[name="password"]');
+    const dateElement = document.querySelector('input[name="date"]');
+    const loginpasswordError = document.querySelector('.loginpassword.error');
+    const timeElement = document.querySelector('input[name="time"]');
+    const durationElement = document.querySelector('input[name="duration"]');
+  const password = passwordElement.value;
+  const date = dateElement.value;
+  const time = timeElement.value;
+  const duration = durationElement.value;
+
+
+    const questionsData = [];
+    for (let i = 1; i <= questionCounter; i++) {
+      const question = document.getElementById(`question${i}`).value;
+      const choiceA = document.getElementById(`choiceA${i}`).value;
+      const choiceB = document.getElementById(`choiceB${i}`).value;
+      const choiceC = document.getElementById(`choiceC${i}`).value;
+      loginpasswordError.textContent = '';
+      const choiceD = document.getElementById(`choiceD${i}`).value;
+      const questionData = {
+        question,
+        choices: {
+          A: choiceA,
+          B: choiceB,
+          C: choiceC,
+          D: choiceD
+        }
+      };
+      questionsData.push(questionData);
+    }
+    console.log('robel')
+    console.log(questionsData);
+    console.log('asfaw')
+    const courseCode = document.getElementById('searchInput').value;
+     // Prepare the data to send to the backend, e.g., using fetch or AJAX
+     const data = {
+      password,
+      courseCode,
+      questions: questionsData,
+      date,
+      time,
+      duration
+    };
+    fetch('/add_question', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+      .then(response => response.json())
+      .then(result => {
+        loginpasswordError.textContent = result.message;
+      })
+      .catch(error => {
+        loginpasswordError.textContent = 'error while save to db';
+      });
+  }
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css">  
+    <link rel="stylesheet" href="/course_detail.css">
+    <style>
+      /* Style for the container */
+/* Style for the container */
+.all_container {
+  max-width: 800px; /* Adjust the max-width as needed */
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f5f5f5;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for the course title */
+.high_course-title {
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Style for course description and objectives */
+.high_course-description,
+.high_course-objective {
+  margin-bottom: 20px;
+  text-align: justify;
+  line-height: 1.6; /* Adjust line-height as needed */
+}
+
+.high_course-description h2,
+.high_course-objective h2,
+.high_course-duration h2,
+.high_chapter-list h2 {
+  color: #333;
+}
+
+/* Style for the videos section */
+.high_chapter-list {
+  margin-bottom: 20px;
+}
+
+
+
+/* Style for the "No available video found" message */
+.high_chapter-list p {
+  color: #888;
+  text-align: justify;
+  line-height: 1.6; /* Adjust line-height as needed */
+}
+
+    </style>  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+     
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <%- include('./partials/nav.ejs') %>
+      <div class="container">
+        <div class="course-page-container">
+          <div class="course-page">
+            <%
+            if(course.sensetivity === 'no')
+            {
+            %>
+            <div class="left-section">
+              <h1 class="course-title"><%=course.course_title  %></h1>
+              
+              <div class="course-description">
+                <h2>Description</h2>
+                <p><%=course.course_description  %></p>
+              </div>
+              
+              <div class="course-objective">
+                <h2>Objective</h2>
+                <p><%=course.course_description  %></p>
+              </div>
+              
+              <div class="course-duration">
+                <h2>Duration</h2>
+                <p>Total Hour: <%=course.total_hour  %></p>
+              </div>
+              
+              <ul class="chapter-list">
+                <h2>Contents</h2>
+                <% if (!(course.material === '')) {
+                  if (!(course.material.includes(';'))) { %>
+                    <li id="mymaterial0" class="chapter-item">Material 1</li>
+                <% } else {
+                  let materialArray = course.material.split(';');
+                  let length = materialArray.length;
+                  for (let i = 0; i < length; i++) { %>
+                    <li id="mymaterial<%= i %>" class="chapter-item">Material <%= i + 1 %></li>
+                <% } } } else { %>
+                    <p>No available material found</p>
+                <% } %>
+              </ul>
+
+            
+              <div class="video-list">
+                <h2>Videos</h2>
+                <% if (!(course.video === "")) {
+                  if (!(course.video.includes(';'))) { %>
+                    <video id="myVideo" width="400" controls onseeking="return false">
+                      <source src="/coursevideo/<%= course.video %>">
+                    </video>
+                <% } else {
+                  let videoArray = course.video.split(';');
+                  let length = videoArray.length;
+                  for (let i = 0; i < length; i++) { %>
+                    <video id="myVideo<%= i %>" width="400" controls onseeking="return false" style="margin: 20px;">
+                      <source src="/coursevideo/<%= videoArray[i] %>">
+                    </video>
+                <% }
+                  } 
+                } else { %>
+                  <p>No available video found</p>
+                <% } %>
+              </div>
+        
+
+            </div>
+            
+
+
+
+            <div class="right-section">
+    <div class="content-placeholder">
+      <div id="pdfContainer">
+  <% if (!(course.material === '')) {
+    if (!(course.material.includes(';'))) { %>
+      <a id="myanchor0" href="/coursematerialpdf/<%= course.material %>" target="_blank" rel="noopener noreferrer">
+            View Material in Full Screen
+          </a>
+      <embed id="mymaterial0" src="/coursematerialpdf/<%= course.material %>" type="application/pdf">
+  <% } else {
+    let materialArray = course.material.split(';');
+    let length = materialArray.length;
+    for (let i = 0; i < length; i++) { %>
+      <a id="myanchor<%= i %>" href="/coursematerialpdf/<%= materialArray[i] %>" target="_blank" rel="noopener noreferrer">
+        View Material in Full Screen
+          </a>
+      <embed id="mymaterial<%= i %>" src="/coursematerialpdf/<%= materialArray[i] %>" type="application/pdf">
+  <% } } } else { %>
+      <p>No available material found</p>
+  <% } %>
+</div>
+    </div>
+  </div>
+
+
+
+  <%} else{ %>
+    <div class="all_container">
+              <h1 class="high_course-title"><%=course.course_title  %></h1>
+              
+              <div class="high_course-description">
+                <h2>Description</h2>
+                <p><%=course.course_description  %></p>
+              </div>
+              
+              <div class="high_course-objective">
+                <h2>Objective</h2>
+                <p><%=course.course_description  %></p>
+              </div>
+              
+              <div class="high_course-duration">
+                <h2>Duration</h2>
+                <p>Total Hour: <%=course.total_hour  %></p>
+              </div>
+            
+              <div class="high_chapter-list">
+                <h2>Videos</h2>
+                <% if (!(course.video === "")) {
+                  if (!(course.video.includes(';'))) { %>
+                    <video id="myVideo" width="400" controls onseeking="return false">
+                      <source src="/coursevideo/<%= course.video %>">
+                    </video>
+                <% } else {
+                  let videoArray = course.video.split(';');
+                  let length = videoArray.length;
+                  for (let i = 0; i < length; i++) { %>
+                    <video id="myVideo<%= i %>" width="400" controls onseeking="return false" style="margin: 20px;">
+                      <source src="/coursevideo/<%= videoArray[i] %>">
+                    </video>
+                <% }
+                  } 
+                } else { %>
+                  <p>No available video found</p>
+                <% } %>
+              </div>
+
+            </div>
+
+
+
+
+
+    <%}%>
+
+
+
+       
+
+       
+
+
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+</body>
+
+  <script>
+
+    window.addEventListener('DOMContentLoaded', () => {
+
+        // Get the chapter items
+const chapterItems = document.querySelectorAll('.chapter-item');
+// Get the PDF elements
+const pdfElements = document.querySelectorAll('#pdfContainer embed');
+
+
+// Add click event listener to each chapter item
+chapterItems.forEach((item, index) => {
+  item.addEventListener('click', () => {
+    // Remove active class from all chapter items
+    chapterItems.forEach((item) => {
+      item.classList.remove('active');
+    });
+
+    // Add active class to clicked chapter item
+    item.classList.add('active');
+
+    // Hide all PDF elements
+    pdfElements.forEach((pdfElement) => {
+      pdfElement.style.display = 'none';
+    });
+
+    // Show the corresponding PDF element
+    const pdfElement = document.querySelector(`#pdfContainer #mymaterial${index}`);
+    pdfElement.style.display = 'block';
+
+    // Hide all anchor tags
+    const anchorTags = document.querySelectorAll('#pdfContainer a');
+    anchorTags.forEach((anchorTag) => {
+      anchorTag.style.display = 'none';
+    });
+
+    // Show the corresponding anchor tag
+    const correspondingAnchorTag = document.querySelector(`#pdfContainer #myanchor${index}`);
+    correspondingAnchorTag.style.display = 'block';
+  });
+});
+
+
+
+
+
+
+
+
+
+
+const videoContainers = document.querySelectorAll('.video-list video');
+  const encryptionKey = 'Zemen Bank HQ Form Retrival Key';
+  const user_id = `<%= user.id%>`
+
+  videoContainers.forEach((video, index) => {
+    if(localStorage.getItem(`VideoUserPogress${index}${user_id}`)){
+    const formData = JSON.parse(localStorage.getItem(`VideoUserPogress${index}${user_id}`));
+    console.log("formData", formData)
+    let maxWatchedTime = formData;
+    if(typeof maxWatchedTime === 'number'){
+      video.currentTime = maxWatchedTime;
+
+      video.addEventListener('timeupdate', () => {
+      const formData = {};
+      if (video.currentTime > maxWatchedTime) {
+        maxWatchedTime = video.currentTime;
+        localStorage.setItem(`VideoUserPogress${index}${user_id}`, maxWatchedTime)
+      }
+    });
+
+    video.addEventListener('seeking', () => {
+      if (video.currentTime > maxWatchedTime) {
+        video.currentTime = maxWatchedTime;
+      }
+    });
+
+    video.addEventListener('ended', () => {
+      maxWatchedTime = video.duration;
+      localStorage.setItem(`VideoUserPogress${index}${user_id}`, 'Watch Ended')
+      // Enable the next video when the current video ends
+      if (index < videoContainers.length - 1) {
+        videoContainers[index + 1].controls = true;
+      }
+    });
+
+    }
+    else{
+      video.addEventListener('ended', () => {
+      maxWatchedTime = video.duration;
+      localStorage.setItem(`VideoUserPogress${index}${user_id}`, 'Watch Ended')
+      // Enable the next video when the current video ends
+      if (index < videoContainers.length - 1) {
+        videoContainers[index + 1].controls = true;
+      }
+    });
+    }
+
+
+  }
+  else{
+    let maxWatchedTime = 0;
+    // console.log("video Length =",videoContainers.length)
+    // Disable the video initially if it's not the first one
+    if (index > 0) {
+      video.controls = false;
+    }
+
+    video.addEventListener('timeupdate', () => {
+      const formData = {};
+      if (video.currentTime > maxWatchedTime) {
+        maxWatchedTime = video.currentTime;
+        localStorage.setItem(`VideoUserPogress${index}${user_id}`, maxWatchedTime)
+      }
+    });
+
+    video.addEventListener('seeking', () => {
+      if (video.currentTime > maxWatchedTime) {
+        video.currentTime = maxWatchedTime;
+      }
+    });
+
+    video.addEventListener('ended', () => {
+      maxWatchedTime = video.duration;
+      localStorage.setItem(`VideoUserPogress${index}${user_id}`, 'Watch Ended')
+      // Enable the next video when the current video ends
+      if (index < videoContainers.length - 1) {
+        videoContainers[index + 1].controls = true;
+      }
+    });
+ 
+    
+  }
+
+  });
+ 
+ 
+
+  
+
+    });
+
+
+  
+    </script>
+
+
+
+
+
+<style>
+  /* Hide only the seek bar */
+  video::-webkit-media-controls-timeline {
+    display: none !important;
+  }
+
+  /* Keep other controls visible */
+  video::-webkit-media-controls {
+    display: flex !important;
+    justify-content: space-between;
+  }
+</style>
+
+
+</html>

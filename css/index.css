@@ -1,0 +1,49 @@
+.course-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Course title */
+.course-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Course description */
+.course-description {
+  margin-bottom: 20px;
+}
+
+/* Course objective */
+.course-objective {
+  margin-bottom: 20px;
+}
+
+/* Course duration */
+.course-duration {
+  margin-bottom: 20px;
+}
+
+/* Course chapters */
+.course-chapters {
+  margin-bottom: 20px;
+}
+
+/* Chapter title */
+.chapter-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Chapter content */
+.chapter-content {
+  margin-bottom: 10px;
+}
+
+/* Read text or material */
+.read-text {
+  margin-bottom: 10px;
+}

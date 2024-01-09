@@ -1,0 +1,128 @@
+.course-page-container .course-page {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Left section */
+.course-page-container .left-section {
+  flex: 0 0 300px;
+  padding-right: 20px;
+}
+
+/* Course title */
+.course-page-container .course-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Course description */
+.course-page-container .course-description,
+.course-page-container .course-duration,
+.course-page-container .course-objective {
+  margin-bottom: 20px;
+}
+
+/* Chapter list */
+.course-page-container .chapter-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.course-page-container .chapter-list li {
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+/* Right section */
+.course-page-container .right-section {
+  flex: 1;
+  overflow-y: scroll;
+  padding-left: 20px;
+}
+
+/* Chapter title */
+.course-page-container .chapter-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* Chapter content */
+.course-page-container .chapter-content {
+  margin-bottom: 10px;
+}
+
+/* Read text or material */
+.course-page-container .read-text {
+  margin-bottom: 10px;
+}
+/* Apply some basic styling to the main container */
+.container {
+  display: flex;
+}
+
+/* Style the left section */
+.left-section {
+  flex: 1; /* Let it take remaining space */
+  padding: 20px; /* Adjust padding as needed */
+}
+
+/* Style the right section */
+.right-section {
+  flex-shrink: 0; /* Don't let it shrink */
+  width: 300px; /* Set a fixed width for the right section */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 20px; /* Adjust padding as needed */
+}
+
+/* Optional: Add a border or background color for visual separation */
+.right-section {
+  border-left: 1px solid #ccc; /* Add a border to visually separate the sections */
+  background-color: #f4f4f4; /* Set a background color for the right section */
+}
+
+/* Optional: Style the chapter list */
+.chapter-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chapter-item {
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+/* Optional: Highlight selected chapter */
+.chapter-item:hover {
+  background-color: #e0e0e0;
+}
+/* Expanded right section */
+/* Read mode styles */
+.course-page-container .right-section.read-mode {
+  background-color: #f9f9f9;
+  cursor: pointer;
+}
+
+.course-page-container .right-section.read-mode:hover {
+  background-color: #f1f1f1;
+}
+
+/* Style for course description and objectives */
+.course-description,
+.course-objective {
+  margin-bottom: 20px;
+  text-align: justify;
+  line-height: 1.6; /* Adjust line-height as needed */
+}
+
+.course-description h2,
+.course-objective h2,
+.course-duration h2,
+.chapter-list h2 {
+  color: #333;
+}

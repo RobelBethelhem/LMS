@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %>
+
+<style>
+  
+  body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+ /* Styles for search input */
+ #searchInput {
+        width: 300px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+    
+      /* Styles for answer container */
+      .answer-container {
+        display: table; /* Display as table */
+        margin-top: 20px;
+        padding: 10px; /* Added padding */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Added box shadow */
+      }
+    
+      .answer-container select {
+        width: 200px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+      }
+
+.main-wrapper {
+  width: 80%;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.quiz-container {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+#question-container p {
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+#choices-container {
+  margin-bottom: 20px;
+}
+
+#choices-container input[type=radio] {
+  margin-right: 8px;
+}
+
+button {
+  padding: 12px 24px;
+  margin-right: 10px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#timer-container {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007BFF;
+  margin-bottom: 20px;
+}
+
+#navigation-container {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+#navigation-container button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#navigation-container button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .main-wrapper {
+    width: 90%;
+  }
+
+  #navigation-container {
+    flex-direction: column;
+  }
+
+  #navigation-container button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  
+
+  
+}
+
+</style>
+
+<body>
+<div class="layer"></div>
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+<%- include('./partials/aside.ejs') %>
+<div class="main-wrapper">
+<%- include('./partials/nav.ejs') %>
+<main class="main users chart-page" id="skip-target">
+<div class="container">
+
+  <div>
+    <p id="dashboard">Quiz Dashboard</p>
+  </div>
+
+  <div class="search-container">
+    <select id="searchInput">
+      <option value="" disabled selected>Select the course code</option>
+      <% for(var i =0;i<exams.length;i++){ %>
+        <option value=<%=exams[i].course_id  %>><%=exams[i].course_id  %></option>
+      <% } %>
+    </select>
+  </div>
+
+  <div id="timer" style="font-weight: bold; position: absolute; top: 20px; right: 20px;"></div>
+
+  <form id="myForm">
+
+  </form>
+
+  <button id="prev" style="display: none;">Previous</button>
+  <button id="next" style="display: none;">Next</button>
+  <button id="submit" style="display: none;">Submit</button>
+  <div style="margin-top: 30px;" id="nav-container">
+    <!-- Navigation buttons will be populated here -->
+  </div>
+  <p id="showanswer" hidden></p>
+
+</div>
+</main>
+
+<%- include('./partials/foot.ejs') %>
+</div>
+</div>
+
+<script>
+  var currentQuestionIndex = 0;
+  var questions = [];
+  var choices = [];
+  var duration = 0;
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('searchInput');
+    var myForm = document.getElementById('myForm');
+    var prevButton = document.getElementById('prev');
+    var nextButton = document.getElementById('next');
+    var searchContainer = document.querySelector(".search-container");
+    var submitButton = document.getElementById('submit');
+    var dashboard = document.getElementById('dashboard');
+    var showanswer = document.getElementById('showanswer');
+
+    searchInput.addEventListener('change', function() {
+      var selectedCourseCode = searchInput.value;
+
+      fetch('/selectedCourseIdForQuiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ courseCode: selectedCourseCode })
+      })
+      .then(response => response.json())
+      .then(data => {
+        questions = data.examArray;
+        choices = data.choiceArray;
+        duration = data.duration;
+        courseId = data.course_id;
+        userId = `<%=user.id%>`
+        searchContainer.style.display = "none";
+        dashboard.style.display = "none";
+
+        renderQuestion(currentQuestionIndex);
+        startTimer(duration);
+      })
+      .catch(error => console.error('Error:', error));
+    });
+
+    prevButton.addEventListener('click', function() {
+      currentQuestionIndex--;
+      renderQuestion(currentQuestionIndex);
+    });
+
+    nextButton.addEventListener('click', function() {
+      currentQuestionIndex++;
+      renderQuestion(currentQuestionIndex);
+    });
+
+    submitButton.addEventListener('click', function() {
+      // Handle form submission here
+    });
+    
+
+    function renderQuestion(index) {
+  myForm.innerHTML = '';
+  var question = questions[index];
+  var questionChoices = choices.slice(index * 4, (index + 1) * 4);
+
+  myForm.innerHTML += `<p style="font-size: 25px;"><strong> ${index+1}. ` +  question + '</strong></p>';
+  questionChoices.forEach(function(choice, i) {
+    var isChecked = localStorage.getItem(`question${courseId}${userId}` + index) == i;
+    myForm.innerHTML += '<input type="radio" name="choice" value="' + i + '"' + (isChecked ? ' checked' : '') + '>' + choice + '<br>';
+  });
+
+  // Add an event listener to the radio buttons
+  var radioButtons = myForm.querySelectorAll('input[type=radio]');
+  radioButtons.forEach(function(radioButton, i) {
+    radioButton.addEventListener('change', function() {
+      localStorage.setItem(`question${courseId}${userId}` + index, i);
+      renderQuestion(index);
+    });
+  });
+
+  prevButton.style.display = index > 0 ? 'block' : 'none';
+  nextButton.style.display = index < questions.length - 1 ? 'block' : 'none';
+  submitButton.style.display = index === questions.length - 1 ? 'block' : 'none';
+
+  // Add navigation buttons
+  var navContainer = document.getElementById('nav-container');
+  navContainer.innerHTML = '';
+  for (let i = 0; i < questions.length; i++) {
+    var navButton = document.createElement('button');
+    navButton.textContent = i + 1;
+    // Change the button color based on whether the question has been answered
+    var answer = localStorage.getItem(`question${courseId}${userId}` + i);
+    navButton.style.backgroundColor = answer !== null ? '#007BFF' : '#FF0000';
+    navButton.addEventListener('click', function() {
+      currentQuestionIndex = i;
+      renderQuestion(currentQuestionIndex);
+    });
+    navContainer.appendChild(navButton);
+  }
+}
+
+
+var countdown; // Declare countdown variable outside the event listener
+submitButton.addEventListener('click', function() {
+  submitAnswers();
+});
+
+function startTimer(durationInMinutes) {
+  var timer = durationInMinutes * 60, minutes, seconds;
+  countdown = setInterval(function () {
+    minutes = parseInt(timer / 60, 10);
+    seconds = parseInt(timer % 60, 10);
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    document.getElementById('timer').textContent = minutes + ":" + seconds;
+
+    if (--timer < 0) {
+      clearInterval(countdown);
+      submitAnswers();
+    }
+  }, 1000);
+}
+
+function submitAnswers() {
+
+  var answers = [];
+  for (var i = 0; i < questions.length; i++) {
+    var answer = localStorage.getItem(`question${courseId}${userId}` + i);
+    answers.push(answer !== null ? answer : 'G');
+  }
+
+
+  fetch('/checktheanswer', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ answers: answers, courseId:courseId, userId,userId})
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('totalLength',data.totalLength)
+    console.log('correctAnswer',data.correctAnswer)
+    console.log('percent',data.percent)
+    
+    showanswer.innerText = `You got ${data.correctAnswer} out of ${data.totalLength} and you got ${data.percent} out of 100%`;
+    showanswer.style.display = "block";
+    
+   
+
+    
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+
+
+  });
+</script>
+
+</body>
+
+</html>

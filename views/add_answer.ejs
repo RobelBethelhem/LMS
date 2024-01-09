@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css">  
+    <style>
+      /* Styles for search input */
+      #searchInput {
+        width: 300px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+    
+      /* Styles for answer container */
+      .answer-container {
+        display: table; /* Display as table */
+        margin-top: 20px;
+        padding: 10px; /* Added padding */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Added box shadow */
+      }
+    
+      .answer-container select {
+        width: 200px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+      }
+    
+      /* Styles for submit container */
+      #submit-container {
+        display: none;
+        margin-top: 20px;
+      }
+    
+      #submit-button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+    
+      #submit-button:hover {
+        background-color: #ff5c8d;
+      }
+    </style>
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+
+
+        <div>
+            <p>Add Answers</p>
+          </div>
+        
+        <div class="search-container">
+            <select id="searchInput">
+              <option value="" disabled selected>Select the course code</option>
+              <% for(var i =0;i<modules.length;i++){ if(user.id === modules[i].creatorid){%>
+                
+                <option value=<%=modules[i].course_id  %>><%=modules[i].course_id  %></option>
+                <% }} %>
+            </select>
+          </div>
+
+          
+
+          <!-- Add the form element around your content -->
+<form id="myForm">
+  <div id="answer-container" class="answer-container" style="display: none;">
+    <select id="answer_select" r>
+      <option value="" disabled selected>Select the choice</option>
+      <option value="A">A</option>
+      <option value="B">B</option>
+      <option value="C">C</option>
+      <option value="D">D</option>
+    </select>
+  </div>
+  <div id="submit-container" style="display: none;">
+    <button type="submit" id="submit-button">Submit</button>
+  </div>
+</form>
+
+      
+
+
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('searchInput');
+    var submitContainer = document.getElementById('submit-container');
+    var submitButton = document.getElementById('submit-button');
+
+    searchInput.addEventListener('change', function() {
+      var selectedCourseCode = searchInput.value;
+
+      fetch('/selected_courseid', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ courseCode: selectedCourseCode })
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json(); // Parse the response JSON
+        } else {
+          console.log('Failed to send selected course ID');
+        }
+      })
+      .then(data => {
+        var questionLength = data.question_length;
+        var course_id = data.courseId;
+
+        // Show the answer container
+        var answerContainer = document.getElementById('answer-container');
+        answerContainer.style.display = 'block';
+
+        // Show the submit container
+        submitContainer.style.display = 'block';
+        
+        // Generate and append the HTML code for answer selection
+        answerContainer.innerHTML = ''; // Clear any existing content
+
+        for (var i = 0; i < questionLength; i++) {
+          var selectElement = document.createElement('select');
+          selectElement.id = 'answer_select_' + i;
+
+          selectElement.innerHTML = `
+            <option value="" disabled selected>Select for Number ${i + 1}</option>       
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          `;
+          selectElement.required = true;
+
+          answerContainer.appendChild(selectElement);
+        }
+
+
+        // Assuming you have a form with the id "myForm"
+var myForm = document.getElementById('myForm');
+
+myForm.addEventListener('submit', function(event) {
+  event.preventDefault(); // Prevents the default form submission
+  var selectedAnswers = [];
+
+for (var i = 0; i < questionLength; i++) {
+  var answerSelect = document.getElementById('answer_select_' + i);
+  var selectedAnswer = answerSelect.value;
+
+  selectedAnswers.push(selectedAnswer);
+}
+
+fetch('/submit_answer', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({ answers: selectedAnswers, course_id: course_id })
+})
+.then(response => {
+  if (response.ok) {
+    // Handle the successful response here
+    console.log('Answers submitted successfully!');
+  } else {
+    console.log('Failed to submit answers');
+  }
+})
+.catch(error => {
+  console.log('Error occurred while submitting the answers:', error);
+});
+});
+ })
+      .catch(error => {
+        console.log('Error occurred while sending selected course ID:', error);
+      });
+    });
+  });
+</script>
+
+</body>
+
+</html>
+

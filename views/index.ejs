@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css">  
+    <link rel="stylesheet" href="/index.css">  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+        <h2 class="main-title">Courses</h2>
+        <div class="search-container">
+          <form class="filtercourses">
+            <input type="text" name="filter" id="search-input" placeholder="Search by title...">
+            <button type="submit" id="search-button">Search</button>
+          </form>
+          <p class="not-found-message" style="display: none;">No courses found.</p>
+          
+      </div>
+      
+        <div class="row stat-cards">
+         
+          <% 
+            total_courses = Courses.length;
+            for(let i=0; i<total_courses;i++) {%>
+          <div class="col-md-6 col-xl-3">
+            <a href="/course_detail/<%= Courses[i].id %>" class="card-link">
+            
+              <article class="stat-cards-item">
+                <span>
+                  <picture><source srcset="thumbnail/<%= Courses[i].thumbnail  %>" type="image/webp"><img src="avatar/avatar-illustrated-01.png" alt="User name"></picture>
+                </span>
+                
+                <div class="stat-cards-info">
+                  <p class="stat-cards-info__num"><%= Courses[i].course_title  %></p>
+                  <p class="stat-cards-info__title">Total_Hour: <%=Courses[i].total_hour %></p>
+                  <p class="stat-cards-info__progress">
+                    <span class="stat-cards-info__profit success">
+                      <i data-feather="trending-up" aria-hidden="true"></i>
+                    </span>
+                    Course_Code: <%= Courses[i].course_id  %>
+                  </p>
+                </div>
+              </article>
+            </a>
+          </div>
+          <% } %>
+        
+
+        </div>
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+
+</body>
+<script>
+  // Select the form and input field
+  const form = document.querySelector('.filtercourses');
+  const searchInput = document.querySelector('#search-input');
+
+  // Select the container where the filtered courses will be displayed
+  const coursesContainer = document.querySelector('.row.stat-cards');
+
+  // Select the element for displaying the "not found" message
+  const notFoundMessage = document.querySelector('.not-found-message');
+
+  // Add event listener for form submission
+  form.addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+
+    // Get the search query from the input field
+    const searchQuery = searchInput.value.trim();
+
+    // Send an AJAX request to the server
+    fetch(`/search?query=${searchQuery}`)
+      .then(response => response.json())
+      .then(data => {
+        // Clear the existing courses in the container
+        coursesContainer.innerHTML = '';
+
+        if (data.length === 0) {
+          // Display the "not found" message
+          notFoundMessage.style.display = 'block';
+        } else {
+          // Hide the "not found" message
+          notFoundMessage.style.display = 'none';
+
+          // Loop through the filtered courses and create HTML elements
+          data.forEach(course => {
+            const courseHTML = `
+           
+              <div class="col-md-6 col-xl-3">
+                <a href="/course_detail/${course._id}" class="card-link">
+                  <article class="stat-cards-item">
+                    <span>
+                      <picture><source srcset="thumbnail/${course.thumbnail}" type="image/webp"><img src="avatar/avatar-illustrated-01.png" alt="User name"></picture>
+                    </span>
+                    
+                    <div class="stat-cards-info">
+                      <p class="stat-cards-info__num">${course.course_title}</p>
+                      <p class="stat-cards-info__title">Total_Hour: ${course.total_hour}</p>
+                      <p class="stat-cards-info__progress">
+                        <span class="stat-cards-info__profit success">
+                          <i data-feather="trending-up" aria-hidden="true"></i>
+                        </span>
+                        Course_Code: ${course.course_id}
+                      </p>
+                    </div>
+                  </article>
+                </a>
+              </div>
+            `;
+            // Append the course HTML to the container
+            coursesContainer.innerHTML += courseHTML;
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  });
+</script>
+
+
+<script>
+  // Function to handle visibility change
+  function handleVisibilityChange() {
+    if (document.visibilityState === 'visible') {
+      // Clear the existing timeout if any
+      clearTimeout(logoutTimeout);
+    } else {
+      // Start a new timeout of 10 seconds only if the timer is not already running
+      if (logoutTimeout === null) {
+        logoutTimeout = setTimeout(logout, 10000);
+      }
+    }
+  }
+
+  // Function to trigger the logout
+  function logout() {
+    // Retrieve the token from the cookie or wherever it's stored
+    const token = getCookie('jwt'); // Implement the getCookie function
+
+    // Call the logout route to destroy the session
+    fetch('/logout', { method: 'GET', headers: { 'Authorization': token } })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+
+        // Redirect to the login route
+        window.location.href = '/log_in';
+      })
+      .catch(error => console.log(error));
+  }
+
+  // Add visibilitychange event listener
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // Function to retrieve a cookie value
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  // Initialize the timeout variable
+  let logoutTimeout = null;
+</script>
+</html>

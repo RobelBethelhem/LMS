@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %>
+<link rel="stylesheet" href="/search_icon.css">
+<link rel="stylesheet" href="/userMan.css">
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search...">
+  </div>
+
+  <label for="itemsPerPage">Rows Per Page:</label>
+  <select id="itemsPerPage" onchange="changeItemsPerPage()">
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="15">15</option>
+    <option value="20">20</option>
+    <option value="40">40</option>
+   
+  </select>
+
+  <table id="employeeTable">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th hidden>ID</th>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Position</th>
+        <th>Department</th>
+        <th>Phone Number</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% 
+        let length = users.length;
+        for(let i=0; i<length ; i++)
+        {
+        %>
+      <tr>
+        <td><%=i+1%> </td>
+        <td hidden><%=users[i].id%> </td>
+        <td><%=users[i].name%> </td>
+        <td><%=users[i].username%></td>
+        <td><%=users[i].position%></td>
+        <td><%=users[i].department%></td>
+        <td><%=users[i].phonenumber%></td>
+        <td><%=users[i].email%></td>
+      </tr>
+      <%}%>
+      <!-- Add more rows with sample values here -->
+    </tbody>
+  </table>
+
+  <div class="pagination" id="pagination"></div>
+<!-- Modal -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <form id="modalForm" class="name usereditform" >
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+
+      <label for="position">Position:</label>
+      <select id="position" name="position" class="custom-select" required>
+        <option value="" disabled selected>Select Position</option>
+        <option value="YGT">YGT</option>
+        <option value="Manager">Manager</option>
+        <option value="Director">Director</option>
+      </select>
+
+      <label for="department">Department:</label>
+      <select id="department" name="department" class="custom-select" required>
+        <option value="" disabled selected>Select Department</option>
+        <option value="Information Technology">Information Technology</option>
+        <option value="Business">Business</option>
+      </select>
+
+      <label for="phonenumber">Phone Number:</label>
+      <input type="tel" id="phonenumber" name="phonenumber" required>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+      <input type="text" id="id" name="id" hidden required>
+      <button type="submit">EDIT</button>
+    </form>
+  </div>
+</div>
+
+</div>
+</main>
+<!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+
+  <script>
+    // JavaScript for search functionality
+    const searchInput = document.getElementById('searchInput');
+    const employeeTable = document.getElementById('employeeTable');
+    const rows = employeeTable.getElementsByTagName('tr');
+
+    searchInput.addEventListener('keyup', function(event) {
+      const value = event.target.value.toLowerCase();
+
+      for (let i = 1; i < rows.length; i++) { // Start from index 1 to exclude the header row
+        const cells = rows[i].getElementsByTagName('td');
+        let shouldDisplay = false;
+
+        for (let j = 0; j < cells.length; j++) {
+          const cellValue = cells[j].innerHTML.toLowerCase();
+
+          if (cellValue.includes(value)) {
+            shouldDisplay = true;
+            break;
+          }
+        }
+
+        if (shouldDisplay) {
+          rows[i].style.display = '';
+        } else {
+          rows[i].style.display = 'none';
+        }
+      }
+    });
+
+    // JavaScript for modal functionality
+const modal = document.getElementById('myModal');
+const modalForm = document.getElementById('modalForm');
+const inputs = modalForm.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"]');
+const selectElements = modalForm.querySelectorAll('select');
+
+const closeBtn = document.getElementsByClassName('close')[0];
+
+// Function to display modal with row data
+function displayModal(row) {
+  const name = row.cells[2].innerHTML;
+  const username = row.cells[3].innerHTML;
+  const position = row.cells[4].innerHTML;
+  const department = row.cells[5].innerHTML;
+  const phoneNumber = row.cells[6].innerHTML;
+  const email = row.cells[7].innerHTML;
+  const id = row.cells[1].innerHTML;
+
+  inputs[0].value = name;
+  inputs[1].value = username;
+  selectElements[0].value = position;
+  selectElements[1].value = department;
+  inputs[2].value = phoneNumber;
+  inputs[3].value = email;
+  inputs[4].value  = id; 
+  console.log(id);
+
+  modal.style.display = 'block';
+}
+
+// Event listener for row click
+for (let i = 1; i < rows.length; i++) {
+  rows[i].addEventListener('click', function() {
+    displayModal(this);
+  });
+}
+const usereditform = document.querySelector('form.name.usereditform');
+
+// Event listener for form submission
+usereditform.addEventListener('submit', async (e) => {
+  e.preventDefault(); 
+  const formData = new FormData(usereditform);
+  
+  try {
+      const res = await fetch(`/manage_user`, {
+        method: 'POST',
+    headers: {
+      'Content-Type': 'application/json', // Set the content type to JSON
+    },
+    body: JSON.stringify(Object.fromEntries(formData)), // Convert FormData to a plain object
+      });
+      
+    } catch (err) {
+      console.log(err);
+    }
+  closeModal();
+});
+
+// Function to close the modal
+function closeModal() {
+  modal.style.display = 'none';
+}
+
+// Event listener for close button
+closeBtn.addEventListener('click', function() {
+  closeModal();
+});
+
+// Event listener for outside modal click
+window.addEventListener('click', function(event) {
+  if (event.target === modal) {
+    closeModal();
+  }
+});
+
+
+
+
+    // New JavaScript for pagination
+    const itemsPerPageSelect = document.getElementById('itemsPerPage');
+    const paginationContainer = document.getElementById('pagination');
+    let currentPage = 1;
+    let itemsPerPage = parseInt(itemsPerPageSelect.value);
+
+    // Initialize table and pagination
+    updateTable();
+
+    // Event handler for changing items per page
+    function changeItemsPerPage() {
+      itemsPerPage = parseInt(itemsPerPageSelect.value);
+      currentPage = 1; // Reset to the first page when changing items per page
+      updateTable();
+    }
+
+    // Event handler for next button
+    function nextPage() {
+      const totalPages = Math.ceil(rows.length / itemsPerPage);
+      if (currentPage < totalPages) {
+        currentPage++;
+        updateTable();
+      }
+    }
+
+    // Event handler for previous button
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        updateTable();
+      }
+    }
+
+    // Update table based on current page and items per page
+    function updateTable() {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const visibleRows = Array.from(rows).slice(1); // Start from index 1 to exclude the header row
+
+      visibleRows.forEach((row, index) => {
+        if (index >= startIndex && index < endIndex) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+
+      // Update pagination
+      updatePagination();
+    }
+
+    // Update pagination based on current page and total pages
+    function updatePagination() {
+      const totalPages = Math.ceil(rows.length / itemsPerPage);
+      paginationContainer.innerHTML = '';
+
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="#" class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</a>`;
+        paginationContainer.appendChild(li);
+      }
+    }
+
+    // Function to go to a specific page
+    function goToPage(page) {
+      currentPage = page;
+      updateTable();
+    }
+  </script>
+
+  <!-- Your existing code... -->
+
+</body>
+</html>

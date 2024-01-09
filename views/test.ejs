@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css">  
+    <link rel="stylesheet" href="/index.css">  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+        <h2 class="main-title">Courses</h2>
+        <div class="search-container">
+          <form id="search-form" onsubmit="event.preventDefault();">
+            <input type="text" id="search-input" placeholder="Search by title...">
+            <button type="submit" id="search-button">Search</button>
+          </form>
+      </div>
+      
+        <div class="row stat-cards">
+          <% 
+            total_courses = courses.length
+            for(let i=0; i<total_courses;i++) {%>
+          <div class="col-md-6 col-xl-3">
+            <a href="your_link_url_here" class="card-link">
+              <article class="stat-cards-item">
+                <span>
+                  <picture><source srcset="thumbnail/<%= courses[i].thumbnail  %>" type="image/webp"><img src="avatar/avatar-illustrated-01.png" alt="User name"></picture>
+                </span>
+                
+                <div class="stat-cards-info">
+                  <p class="stat-cards-info__num"><%= courses[i].course_title  %></p>
+                  <p class="stat-cards-info__title">Total_Hour: <%=courses[i].total_hour %></p>
+                  <p class="stat-cards-info__progress">
+                    <span class="stat-cards-info__profit success">
+                      <i data-feather="trending-up" aria-hidden="true"></i>
+                    </span>
+                    Course_Code: <%= courses[i].course_id  %>
+                  </p>
+                </div>
+              </article>
+            </a>
+          </div>
+          <% } %>
+        
+
+        </div>
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+</body>
+    <script>
+      // Wait for the DOM to load
+document.addEventListener('DOMContentLoaded', function() {
+  // Find the search form and add an event listener for form submission
+  const searchForm = document.getElementById('search-form');
+  searchForm.addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the form from submitting
+
+    // Get the user input from the search input field
+    const userInput = document.getElementById('search-input').value.toLowerCase();
+
+    // Filter the courses based on the user input
+    const courseCards = document.querySelectorAll('.stat-cards-item');
+    courseCards.forEach(function(card) {
+      const courseTitle = card.querySelector('.stat-cards-info__num').textContent.toLowerCase();
+      if (courseTitle.includes(userInput)) {
+        card.style.display = ''; // Show the card if it matches the user input
+      } else {
+        card.style.display = 'none'; // Hide the card if it doesn't match the user input
+      }
+    });
+  });
+});
+
+    </script>
+
+
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css">  
+    <link rel="stylesheet" href="/course_detail.css">  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+     
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <%- include('./partials/nav.ejs') %>
+      <div class="container">
+        <div class="course-page-container">
+          <div class="course-page">
+            <div class="left-section">
+              <h1 class="course-title"><%=course.course_title  %></h1>
+              
+              <div class="course-description">
+                <h2>Description</h2>
+                <p><%=course.course_description  %></p>
+              </div>
+              
+              <div class="course-objective">
+                <h2>Objective</h2>
+                <p><%=course.course_description  %></p>
+              </div>
+              
+              <div class="course-duration">
+                <h2>Duration</h2>
+                <p>Total Hour: <%=course.total_hour  %></p>
+              </div>
+              
+              <ul class="chapter-list">
+                <h2>Contents</h2>
+                <% if (!(course.material === '')) {
+                  if (!(course.material.includes(';'))) { %>
+                    <li id="mymaterial0" class="chapter-item">Material 1</li>
+                <% } else {
+                  let materialArray = course.material.split(';');
+                  let length = materialArray.length;
+                  for (let i = 0; i < length; i++) { %>
+                    <li id="mymaterial<%= i %>" class="chapter-item">Material <%= i + 1 %></li>
+                <% } } } else { %>
+                    <p>No available material found</p>
+                <% } %>
+              </ul>
+
+            
+              <div class="chapter-list">
+                <h2>Videos</h2>
+                <% if (!(course.video === "")) {
+                  if (!(course.video.includes(';'))) { %>
+                    <video id="myVideo" width="400" controls onseeking="return false">
+                      <source src="/coursevideo/<%= course.video %>">
+                    </video>
+                <% } else {
+                  let videoArray = course.video.split(';');
+                  let length = videoArray.length;
+                  for (let i = 0; i < length; i++) { %>
+                    <video id="myVideo<%= i %>" width="400" controls onseeking="return false" style="margin: 20px;">
+                      <source src="/coursevideo/<%= videoArray[i] %>">
+                    </video>
+                <% }
+                  } 
+                } else { %>
+                  <p>No available video found</p>
+                <% } %>
+              </div>
+        
+
+            </div>
+            
+            
+            <div class="right-section">
+    <div class="content-placeholder">
+      <div id="pdfContainer">
+  <% if (!(course.material === '')) {
+    if (!(course.material.includes(';'))) { %>
+      <embed id="mymaterial0" src="/coursematerialpdf/<%= course.material %>" type="application/pdf">
+  <% } else {
+    let materialArray = course.material.split(';');
+    let length = materialArray.length;
+    for (let i = 0; i < length; i++) { %>
+      <embed id="mymaterial<%= i %>" src="/coursematerialpdf/<%= materialArray[i] %>" type="application/pdf">
+  <% } } } else { %>
+      <p>No available material found</p>
+  <% } %>
+</div>
+    </div>
+  </div>
+          </div>
+
+       
+
+
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+</body>
+
+  <script>
+    // Get the chapter items
+const chapterItems = document.querySelectorAll('.chapter-item');
+// Get the PDF elements
+const pdfElements = document.querySelectorAll('#pdfContainer embed');
+
+// Add click event listener to each chapter item
+chapterItems.forEach((item, index) => {
+  item.addEventListener('click', () => {
+    // Remove active class from all chapter items
+    chapterItems.forEach((item) => {
+      item.classList.remove('active');
+    });
+
+    // Add active class to clicked chapter item
+    item.classList.add('active');
+
+    // Hide all PDF elements
+    pdfElements.forEach((pdfElement) => {
+      pdfElement.style.display = 'none';
+    });
+
+    // Show the PDF element with the corresponding ID
+    const pdfElement = document.querySelector(`#pdfContainer #mymaterial${index}`);
+    pdfElement.style.display = 'block';
+  });
+});
+    </script>
+
+
+
+
+<script>
+  const videoContainers = document.querySelectorAll('.chapter-list video');
+  let currentVideo = videoContainers[0];
+
+  videoContainers.forEach((video, index) => {
+    let seekTime = 0;
+
+    video.addEventListener('timeupdate', () => {
+      if (video.currentTime < seekTime) {
+        video.currentTime = seekTime;
+      }
+    });
+
+
+    video.addEventListener('play', () => {
+      seekTime = video.currentTime;
+    });
+  });
+</script>
+
+
+
+
+
+<style>
+  /* Hide only the seek bar */
+  video::-webkit-media-controls-timeline {
+    display: none !important;
+  }
+
+  /* Keep other controls visible */
+  video::-webkit-media-controls {
+    display: flex !important;
+    justify-content: space-between;
+  }
+</style>
+<script>
+  interact('.draggable')
+  .draggable({
+    onmove: dragMoveListener
+  });
+
+interact('.resizable')
+  .resizable({
+    edges: { left: true, right: true },
+    onmove: resizeMoveListener
+  });
+
+function dragMoveListener(event) {
+  var target = event.target;
+  var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+  var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+  target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+  target.setAttribute('data-x', x);
+  target.setAttribute('data-y', y);
+}
+
+function resizeMoveListener(event) {
+  var target = event.target;
+  var x = parseFloat(target.getAttribute('data-x')) || 0;
+
+  target.style.width = event.rect.width + 'px';
+  target.setAttribute('data-x', x);
+}
+
+// Enable draggable and resizable functionality for existing sections
+var draggableSections = document.querySelectorAll('.draggable');
+var resizableSections = document.querySelectorAll('.resizable');
+
+for (var i = 0; i < draggableSections.length; i++) {
+  interact(draggableSections[i]).unset();
+  interact(draggableSections[i]).draggable({ onmove: dragMoveListener });
+}
+
+for (var i = 0; i < resizableSections.length; i++) {
+  interact(resizableSections[i]).unset();
+  interact(resizableSections[i]).resizable({
+    edges: { left: true, right: true },
+    onmove: resizeMoveListener
+  });
+}
+  </script>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// profile
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css">  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+        
+
+        <div>
+          <p>Profile Page</p>
+        </div>
+
+
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const nameinput = document.getElementById('name');
+const courseinput = document.getElementById('course');
+const directorinput = document.getElementById('director');
+const headinput = document.getElementById('head');
+const download_btn = document.getElementById('download_btn');
+
+const currentDate = new Date();
+const options = { year: 'numeric', month: 'short', day: 'numeric' };
+const formattedDate = currentDate.toLocaleDateString('en-US', options);
+
+const image = new Image();
+image.src = 'Certeficate.png';
+image.onload = function(){
+    drawImage()
+}
+function drawImage(){
+    ctx.drawImage(image,0,0,canvas.width,canvas.height);
+    ctx.font = 'bold 35px monotype corsiva';
+    ctx.fillStyle = 'white';
+    ctx.fillText(courseinput.value,300,380);
+    ctx.fillText(nameinput.value,320,500);
+    ctx.fillText(directorinput.value,150,730);
+    ctx.fillText(headinput.value,580,730);
+    ctx.fillText(formattedDate,430,810)
+
+}
+
+nameinput.addEventListener('input', function(){
+    drawImage()
+})
+courseinput.addEventListener('input', function(){
+    drawImage()
+})
+directorinput.addEventListener('input', function(){
+    drawImage()
+})
+headinput.addEventListener('input', function(){
+    drawImage()
+})
+download_btn.addEventListener('click', function(){
+    download_btn.href = canvas.toDataURL('image/jpg')
+    download_btn.download = 'Certeficate -' + courseinput.value;
+})
+
+
+
+
+
+
+
+
+<!-- <div class="button-container">
+              <button onclick="addQuestion()">+</button>
+              <button onclick="removeQuestion()">-</button>
+              <button type="submit" id="submit-btn">Submit</button>
+          </div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+          //const courseregform = document.querySelector('form.name.courseregform');
+          const res = await fetch('/update_course', {
+      method: 'POST',
+      body: formData,
+    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    module.exports.post_register_user = async (req, res) => {
+  try {
+    if (req.file && req.file.size > 5 * 1024 * 1024) {
+      return res.status(400).json({ message: 'File too large. Maximum file size allowed is 5MB.' });
+    }
+
+    if (req.file) {
+      req.body.pp = req.file.filename;
+    }
+
+    console.log(req.body);
+
+    const existingUserByEmail = await User.findOne({ email: req.body.email });
+    const existingUserByUsername = await User.findOne({ username: req.body.username });
+    const existingUserByPhoneNumber = await User.findOne({ phonenumber: req.body.phonenumber });
+
+    if (existingUserByEmail) {
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+
+    if (existingUserByUsername) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
+    if (existingUserByPhoneNumber) {
+      return res.status(400).json({ message: 'Phone number already exists' });
+    }
+
+    const newUser = new User(req.body);
+    await newUser.save();
+
+    res.status(200).json({ message: 'Successfully added user' });
+    //send email to register user
+    const email = req.body.email;
+  User.findOne({email: email}, (err,user)=>{
+      if(user){
+          if (err) throw console.log(err);
+          res.status(201).json({user: user.id});
+          
+          // Send email confirmation
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'robelbethelhem@gmail.com',
+    pass: user.password,
+  },
+});
+const mailOptions = {
+  from: 'robelbethelhem@gmail.com',
+  to: req.body.email,
+  subject: 'Your Account is SetUp in Zemen Bank LMS System',
+};
+transporter.sendMail(mailOptions, (error, info) => {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+  }
+})
+
+      }
+      else{
+          res.status(400).json({error: 'email is incorrect'});
+      }
+  })
+
+
+
+
+
+
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+//above in maincontroller register_user
+
+
+
+
+
+
+
+
+
+
+
+User.find()
+          .then((users)=>{
+            let emailAddresses = [];
+            let length = users.length;
+            for(let i=0 ; i < length; i++){
+                  for(let j=0;j<positions.length; j++){
+                    if(users[i].position === positions[j])
+                    {
+                      for(let k=0; k<departments; k++){
+                        if(users[i].position === departments[k]){
+                          emailAddresses.push(users[i].email);
+                        }
+                      }
+
+                    }
+                  }
+            }
+             // Send email confirmation to multiple users
+                const transporter = nodemailer.createTransport({
+                  service: 'gmail',
+                  auth: {
+                    user: 'robelbethelhem@gmail.com',
+                    pass: 'zharbowsydpvlcfb',
+                  },
+                });
+
+                for (const emailAddress of emailAddresses) {
+                  const mailOptions = {
+                    from: 'robelbethelhem@gmail.com',
+                    to: emailAddress,
+                    subject: 'Courses Are Added that Mach With With your Current Position and Department',
+                  };
+            
+                  const info =  transporter.sendMail(mailOptions);
+                  console.log(`Email sent to ${emailAddress}: ${info.response}`);
+                  
+                }
+
+          }
+          )
+          .catch(e=>console.log(e))
+
+   

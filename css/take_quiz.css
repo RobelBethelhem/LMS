@@ -1,0 +1,71 @@
+/* Custom body style */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f1f1f1;
+  margin: 0;
+  padding: 20px;
+}
+.time-counter {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  background-color: #f1f1f1;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+/* Question container */
+.question-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Question */
+.question {
+  margin-bottom: 20px;
+}
+
+/* Choices */
+.choices {
+  margin-bottom: 20px;
+}
+
+/* Choice radio buttons */
+.choice {
+  margin-bottom: 10px;
+}
+
+/* Navigation buttons */
+.navigation {
+  margin-top: 20px;
+}
+
+/* Flag button */
+.flag {
+  float: left;
+  margin-bottom: 20px;
+}
+
+/* Question navigation buttons */
+.question-navigation {
+  float: right;
+}
+
+.question-button {
+  margin-right: 5px;
+}
+
+/* Red color for flagged question navigation button */
+.question-button.flagged {
+  background-color: red;
+  color: white;
+}
+
+/* Hide previous and next buttons */
+.hide {
+  display: none;
+}

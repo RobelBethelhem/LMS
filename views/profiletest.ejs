@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('./partials/head.ejs') %>
+
+<style>
+/* Add the rest of your CSS code here */
+ /* Styles for search input */
+ #searchInput {
+        width: 300px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+    
+      /* Styles for answer container */
+      .answer-container {
+        display: table; /* Display as table */
+        margin-top: 20px;
+        padding: 10px; /* Added padding */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Added box shadow */
+      }
+    
+      .answer-container select {
+        width: 200px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+      }
+
+.question-container {
+  clear: both;
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-bottom: 20px;
+  position: relative; /* Added for positioning navigation */
+}
+
+.question {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.choices {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.choice {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.timer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px 10px;
+  background-color: #f0f0f0; /* Added background color for visibility */
+}
+
+.prev-next-button {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.prev-next-button button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.nav-button {
+  position: absolute; /* Position navigation absolutely */
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%); /* Vertically center navigation */
+}
+
+.nav-button button {
+  margin-bottom: 5px; /* Add spacing between navigation buttons */
+}
+
+.red-button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.nav-button {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.nav-button button {
+  margin-bottom: 5px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 15px; /* Adjust the padding as desired */
+  font-size: 14px;
+  cursor: pointer;
+  flex-basis: 33.33%; /* Each button takes up one-third of the container */
+  box-sizing: border-box; /* Include padding in the width calculation */
+}
+</style>
+<body>
+<div class="layer"></div>
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+<%- include('./partials/aside.ejs') %>
+<div class="main-wrapper">
+<%- include('./partials/nav.ejs') %>
+<main class="main users chart-page" id="skip-target">
+<div class="container">
+
+  <div>
+    <p>Quiz Dashboard</p>
+  </div>
+
+  <div class="search-container">
+    <select id="searchInput">
+      <option value="" disabled selected>Select the course code</option>
+      <% for(var i =0;i<exams.length;i++){ %>
+        <option value=<%=exams[i].course_id  %>><%=exams[i].course_id  %></option>
+      <% } %>
+    </select>
+  </div>
+
+  <form id="myForm">
+
+  </form>
+
+</div>
+</main>
+
+<%- include('./partials/foot.ejs') %>
+</div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('searchInput');
+    var submitContainer = document.getElementById('submit-container');
+    var submitButton = document.getElementById('submit-button');
+
+    searchInput.addEventListener('change', function() {
+      var selectedCourseCode = searchInput.value;
+
+      fetch('/selectedCourseIdForQuiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ courseCode: selectedCourseCode })
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json(); // Parse the response JSON
+        } else {
+          console.log('Failed to send selected course ID');
+        }
+      })
+      .then(data => {
+console.log('Questions', data.examArray)
+console.log('Choices', data.choiceArray)
+console.log('course_id', data.course_id)
+console.log('duration', data.duration)
+console.log('Questions', data.examArray)
+        console.log('Choices', data.choiceArray)
+        console.log('course_id', data.course_id)
+        console.log('duration', data.duration)
+
+       // Function to display a question and its choices
+function displayQuestion(index) {
+  let question = data.examArray[index];
+  let choices = data.choiceArray.slice(index * 4, index * 4 + 4);
+
+  // Clear the form
+  let formElement = document.getElementById('myForm');
+  formElement.innerHTML = '';
+
+ 
+
+  // Create a div for the question container
+  let questionContainer = document.createElement('div');
+questionContainer.style.width = '100%';
+questionContainer.style.clear = 'both'; // Add this line to clear any floated elements
+
+// Append the questionContainer to the parent container
+document.getElementById('myForm').appendChild(questionContainer);
+
+  // Display the question
+  let questionElement = document.createElement('p');
+  questionElement.textContent = question;
+  questionElement.style.display = 'inline-block';
+  questionElement.style.fontWeight = 'bold';
+  questionContainer.appendChild(questionElement);
+
+  // Create a line break for the question and first choice
+  questionContainer.appendChild(document.createElement('br'));
+
+  // Create a div for the choices
+  let choicesDiv = document.createElement('div');
+  formElement.appendChild(choicesDiv);
+
+  // Display the choices
+  for (let i = 0; i < choices.length; i++) {
+    let choiceElement = document.createElement('input');
+    choiceElement.type = 'radio';
+    choiceElement.name = 'choice';
+    choiceElement.value = choices[i];
+    choiceElement.id = 'choice' + i;
+
+    let label = document.createElement('label');
+    label.htmlFor = 'choice' + i;
+    label.textContent = choices[i];
+
+    choicesDiv.appendChild(choiceElement);
+    choicesDiv.appendChild(label);
+    choicesDiv.appendChild(document.createElement('br'));
+  }
+
+ // Add navigation buttons
+let navButtonsContainer = document.createElement('div');
+navButtonsContainer.className = 'nav-button';
+
+for (let i = 0; i < data.examArray.length; i++) {
+  let navButton = document.createElement('button');
+  navButton.textContent = i + 1;
+  navButton.addEventListener('click', function() {
+    displayQuestion(i);
+  });
+  navButton.classList.add('red-button'); // Add a class for styling
+  navButtonsContainer.appendChild(navButton);
+}
+
+formElement.appendChild(navButtonsContainer);
+
+  // Add previous and next buttons
+let prevNextContainer = document.createElement('div');
+prevNextContainer.className = 'prev-next-button';
+
+if (index > 0) {
+  let prevButton = document.createElement('button');
+  prevButton.textContent = 'Previous';
+  prevButton.addEventListener('click', function() {
+    displayQuestion(index - 1);
+  });
+  prevButton.classList.add('red-button'); // Add a class for styling
+  prevNextContainer.appendChild(prevButton);
+}
+
+if (index < data.examArray.length - 1) {
+  let nextButton = document.createElement('button');
+  nextButton.textContent = 'Next';
+  nextButton.addEventListener('click', function() {
+    displayQuestion(index + 1);
+  });
+  nextButton.classList.add('red-button'); // Add a class for styling
+  prevNextContainer.appendChild(nextButton);
+}
+
+formElement.appendChild(prevNextContainer);
+}
+
+// Display the first question by default
+displayQuestion(0);
+
+// Timer logic
+let duration = data.duration * 60; // Convert duration to seconds
+let timerElement = document.createElement('p');
+timerElement.className = 'timer';
+document.getElementById('myForm').insertBefore(timerElement, document.getElementById('myForm').firstChild);
+
+function updateTimer() {
+  duration--;
+  let minutes = Math.floor(duration / 60);
+  let seconds = duration % 60;
+  timerElement.textContent = `Time remaining: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+  if (duration <= 0) {
+    clearInterval(timer);
+    timerElement.textContent = 'Time is up!';
+  }
+}
+
+let timer = setInterval(updateTimer, 1000);
+ })
+      .catch(error => {
+        console.log('Error occurred while sending selected course ID:', error);
+      });
+    });
+  });
+</script>
+
+</body>
+
+</html>
+
+
+
+
+

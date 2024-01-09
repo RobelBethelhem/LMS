@@ -1,0 +1,194 @@
+<html lang="en">
+    <%- include('./partials/head.ejs') %>
+    <link rel="stylesheet" href="/search_icon.css">  
+    <link rel="stylesheet" href="/take_quiz.css">  
+<body>
+  <div class="layer"></div>
+<!-- ! Body -->
+
+<div class="page-flex" style="padding-top: 120px; margin-left: 200px; padding-top: 120px; padding-left: 20px;">
+  <!-- ! Sidebar -->
+  <%- include('./partials/aside.ejs') %>
+  <div class="main-wrapper">
+    <!-- ! Main nav -->
+      <%- include('./partials/nav.ejs') %>
+    <!-- ! Main -->
+    <main class="main users chart-page" id="skip-target">
+      <div class="container">
+        
+
+        <div class="question-container">
+          <div class="question">
+            <h1>Question 1:</h1>
+            <p>This is the question.</p>
+          </div>
+          <div class="choices">
+            <input type="radio" name="choice" value="choice1" class="choice" id="choice1">
+            <label for="choice1">Choice 1</label><br>
+            <input type="radio" name="choice" value="choice2" class="choice" id="choice2">
+            <label for="choice2">Choice 2</label><br>
+            <input type="radio" name="choice" value="choice3" class="choice" id="choice3">
+            <label for="choice3">Choice 3</label><br>
+            <input type="radio" name="choice" value="choice4" class="choice" id="choice4">
+            <label for="choice4">Choice 4</label><br> 
+            
+
+          </div>
+        </div>
+      
+        <div class="navigation">
+          <button id="prev-button">Previous</button>
+          <button id="next-button">Next</button>
+          <button id="submit-button" class="hide">Submit</button>
+        </div>
+      
+        <div class="flag">
+          <a href="#" id="flag-button">Flag</a>
+        </div>
+      
+        <div class="question-navigation">
+          <button class="question-button active">1</button>
+          <button class="question-button">2</button>
+          <button class="question-button">3</button>
+          <button class="question-button">4</button>
+          <button class="question-button">5</button>
+          <button class="question-button">6</button>
+          <button class="question-button">7</button>
+          <button class="question-button">8</button>
+          <button class="question-button">9</button>
+          <button class="question-button">10</button>
+        </div>
+      
+        <script>
+       // Get the question navigation buttons
+      const buttons = document.querySelectorAll('.question-button');
+      let activeButtonIndex = 0; // Track the active button index
+      let choiceSelected = false; // Track if a choice is selected
+      
+      // Add event listeners to each button
+      buttons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+          // Remove the active class from all buttons
+          buttons.forEach((btn) => {
+            btn.classList.remove('active');
+            if (!choiceSelected || activeButtonIndex !== index) {
+              btn.style.backgroundColor = '';
+            }
+          });
+      
+          // Add the active class to the clicked button
+          button.classList.add('active');
+      
+          // Scroll to the corresponding question
+          const questionContainers = document.querySelectorAll('.question-container');
+          questionContainers.forEach((container, i) => {
+            container.style.display = index === i ? 'block' : 'none';
+          });
+      
+          // Update the active button index
+          activeButtonIndex = index;
+      
+          // Reset choice selection flag
+          choiceSelected = false;
+        });
+      });
+      
+      // Flag button click event handler
+      const flagButton = document.getElementById('flag-button');
+      flagButton.addEventListener('click', () => {
+        // Toggle the flag button color
+        flagButton.classList.toggle('flagged');
+      
+        // Update the flag status for the active question
+        const questionButtons = document.querySelectorAll('.question-button');
+        questionButtons[activeButtonIndex].classList.toggle('flagged');
+      });
+      
+      // Previous button click event handler
+      const prevButton = document.getElementById('prev-button');
+      prevButton.addEventListener('click', () => {
+        // If not the first question, navigate to the previous question
+        if (activeButtonIndex > 0) {
+          activeButtonIndex--;
+          buttons[activeButtonIndex].click();
+        }
+      });
+      
+      // Next button click event handler
+      const nextButton = document.getElementById('next-button');
+      nextButton.addEventListener('click', () => {
+        // If not the last question, navigate to the next question
+        if (activeButtonIndex < buttons.length - 1) {
+          activeButtonIndex++;
+          buttons[activeButtonIndex].click();
+        }
+      });
+      
+      // Submit button click event handler
+      const submitButton = document.getElementById('submit-button');
+      submitButton.addEventListener('click', () => {
+        // Perform submit action
+        console.log('Submitting answers...');
+      });
+      
+      // Choice selection event handler
+      const choices = document.querySelectorAll('.choice');
+      choices.forEach((choice) => {
+        choice.addEventListener('change', () => {
+          // Set the choice selection flag
+          choiceSelected = true;
+        });
+      });
+      
+      // Time counter
+      const timeCounter = document.createElement('div');
+      timeCounter.classList.add('time-counter');
+      document.body.appendChild(timeCounter);
+      
+      let seconds = 0;
+      let minutes = 0;
+      let hours = 0;
+      
+      function updateTimeCounter() {
+        seconds++;
+      
+        if (seconds === 60) {
+          seconds = 0;
+          minutes++;
+      
+          if (minutes === 60) {
+            minutes = 0;
+            hours++;
+          }
+        }
+      
+        const formattedTime = `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
+        timeCounter.textContent = formattedTime;
+      }
+      
+      function padZero(value) {
+        return value.toString().padStart(2, '0');
+      }
+      
+      // Start the time counter
+      setInterval(updateTimeCounter, 1000);
+        </script>
+
+
+      </div>
+    </main>
+        
+    <!-- ! Footer -->
+    <%- include('./partials/foot.ejs') %>
+  </div>
+</div>
+<!-- Chart library -->
+<script src="/plugins/chart.min.js"></script>
+<!-- Icons library -->
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/js/script.js"></script>
+</body>
+
+</html>
+
